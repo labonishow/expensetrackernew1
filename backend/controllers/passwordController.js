@@ -47,7 +47,7 @@ const forgotPassword = async (req, res) => {
       isActive: true,
     });
 
-    const resetUrl = `${FRONTEND_BASE_URL}/resetpassword.html?requestId=${requestId}`;
+    const resetUrl = `${process.env.FRONTEND_BASE_URL}/resetpassword.html?requestId=${requestId}`;
 
     try {
       await tranEmailApi.sendTransacEmail({
