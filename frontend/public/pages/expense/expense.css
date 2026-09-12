@@ -1,0 +1,609 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+    min-height: 100vh;
+}
+
+
+
+:root {
+    /* Fallback before JS measures the real header height (see premium.js) */
+    --header-h: 130px;
+}
+
+.page-wrap {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    /* Room for the fixed header so content doesn't start underneath it.
+       The banner can show/hide and change the header's height, so this
+       value is kept in sync by JS rather than hardcoded. */
+    padding-top: calc(var(--header-h) + 40px);
+}
+
+@media (max-width: 575px) {
+    .page-wrap {
+        padding-top: calc(var(--header-h) + 24px);
+    }
+}
+
+
+
+
+
+.tracker-header {
+    background:rgb(104, 102, 102) ;
+    color: #fff;
+    text-align: center;
+    padding: 30px 30px 30px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1020;
+    box-shadow: 0 8px 20px -8px rgba(30, 20, 60, 0.5);
+}
+
+
+
+
+
+.premium-banner {
+    margin: 0 0 12px;
+    text-align: left;
+    line-height: 1.4;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4a2f00;
+    background: linear-gradient(120deg, #ffe9b3 0%, #ffd876 100%);
+    border-radius: 16px;
+    padding: 10px 18px;
+    max-width: 1000px;
+    margin-right: auto;
+}
+
+#premium-user-name {
+    font-weight: 700;
+}
+
+.premium-banner[hidden] {
+    display: none;
+}
+
+/* Wraps both header buttons in the top-right corner */
+.header-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.premium-btn,
+.leaderboard-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.12s ease, filter 0.15s ease;
+    white-space: nowrap;
+    margin-top: 15px;
+    margin-right: 15px;
+}
+
+.premium-btn {
+    background: linear-gradient(120deg, #f5b942 0%, #f0932b 100%);
+    box-shadow: 0 8px 18px -6px rgba(240, 147, 43, 0.6);
+}
+
+.leaderboard-btn {
+    background: linear-gradient(120deg, #22c55e 0%, #0ea5e9 100%);
+    box-shadow: 0 8px 18px -6px rgba(14, 165, 233, 0.6);
+}
+
+.reports-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    color: #fff;
+    transition: transform 0.12s ease, filter 0.15s ease;
+    white-space: nowrap;
+    margin-top: 15px;
+    margin-right: 15px;
+    background: linear-gradient(120deg, #17a2b8 0%, #0f6674 100%);
+    box-shadow: 0 8px 18px -6px rgba(23, 162, 184, 0.6);
+}
+
+.reports-btn:hover {
+    filter: brightness(1.06);
+}
+
+.reports-btn:active {
+    transform: scale(0.96);
+}
+
+.reports-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.premium-btn:hover,
+.leaderboard-btn:hover {
+    filter: brightness(1.06);
+}
+
+.premium-btn:active,
+.leaderboard-btn:active {
+    transform: scale(0.96);
+}
+
+.premium-btn:disabled {
+    cursor: default;
+    opacity: 0.85;
+}
+
+.premium-btn.is-premium {
+    background: linear-gradient(120deg, #22c55e 0%, #16a34a 100%);
+    box-shadow: 0 8px 18px -6px rgba(22, 163, 74, 0.6);
+}
+
+@media (max-width: 575px) {
+    .header-actions {
+        position: static;
+        margin-top: 14px;
+        align-self: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .tracker-header-top {
+        flex-direction: column;
+    }
+}
+
+
+
+.expenses-list {
+    padding: 24px 0 30px;
+}
+.expenses-list h1{
+    display: flex;
+    justify-content: center;
+}
+.empty-state {
+    text-align: center;
+    color: #9aa0ab;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin: 0;
+    padding: 10px 20px;
+}
+
+
+.expense-card {
+    width: calc(100% - 40px);
+    margin: 0 auto 20px;
+    background: rgb(226, 223, 225);
+    border-radius: 10px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.expense-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.expense-amount {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
+    color: #dc3545;
+}
+
+.expense-description {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #333;
+}
+
+.expense-category {
+    font-size: 14px;
+    margin: 0;
+    color: #777;
+}
+
+.delete-expense-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.delete-expense-btn:hover {
+    background: #bb2d3b;
+}
+
+
+
+.fab {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(120deg, #4f5fd6 0%, #8b5cf6 100%);
+    color: #fff;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 12px 26px -8px rgba(99, 102, 241, 0.6);
+    cursor: pointer;
+    transition: transform 0.12s ease, filter 0.15s ease;
+    z-index: 20;
+}
+
+.fab:hover {
+    filter: brightness(1.08);
+}
+
+.fab:active {
+    transform: scale(0.94);
+}
+
+
+
+.modal-content {
+    border-radius: 16px;
+    border: none;
+}
+
+.modal-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #1f2333;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.field-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #dfe2e8;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    color: #1f2333;
+    outline: none;
+    background: #fff;
+}
+
+.field-input:focus {
+    border-color: #8b5cf6;
+}
+
+.category-hint {
+    display: block;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: #8b5cf6;
+    font-weight: 500;
+}
+
+.btn-action {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 0;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #fff;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.btn-action:hover {
+    filter: brightness(0.92);
+}
+
+.btn-expense {
+    background: #ef5b3f;
+}
+
+.form-message {
+    min-height: 1.2em;
+    font-size: 0.82rem;
+    margin-top: 10px;
+}
+
+/* Leaderboard list */
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #f8f8fb;
+    border-radius: 10px;
+    padding: 12px 16px;
+}
+
+.leaderboard-row:nth-child(1) {
+    background: linear-gradient(120deg, #fff7e0, #ffe9b3);
+}
+
+.lb-rank {
+    font-weight: 700;
+    color: #6b7280;
+    width: 32px;
+}
+
+.lb-name {
+    flex: 1;
+    font-weight: 500;
+    color: #1f2333;
+}
+
+.lb-total {
+    font-weight: 700;
+    color: #dc3545;
+}
+
+
+
+@media (max-width: 575px) {
+
+    .tracker-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .expense-card {
+        padding: 15px;
+    }
+
+    .expense-amount {
+        font-size: 20px;
+    }
+
+    .expense-description {
+        font-size: 15px;
+    }
+
+    .expense-category {
+        font-size: 13px;
+    }
+
+    .delete-expense-btn {
+        padding: 7px 10px;
+        font-size: 13px;
+    }
+}
+
+/* Reports modal */
+.report-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.report-view-toggle {
+    display: flex;
+    background: #f1f2f6;
+    border-radius: 999px;
+    padding: 4px;
+}
+
+.report-view-btn {
+    border: none;
+    background: none;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    color: #6b7280;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.report-view-btn.active {
+    background: #17a2b8;
+    color: #fff;
+}
+
+.download-report-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    background: #573b8a;
+    cursor: pointer;
+}
+
+.download-report-btn:hover {
+    filter: brightness(1.08);
+}
+
+.download-report-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.report-table-container {
+    overflow-x: auto;
+    max-height: 55vh;
+    overflow-y: auto;
+}
+
+.report-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.report-table thead th {
+    background: #17a2b8;
+    color: #fff;
+    text-align: left;
+    padding: 8px 12px;
+    position: sticky;
+    top: 0;
+}
+
+.report-table td {
+    padding: 7px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.report-table tbody tr:nth-child(odd) {
+    background: #f8fdfe;
+}
+
+.report-table .income-col,
+.report-table .expense-col,
+.report-table .savings-col {
+    text-align: right;
+}
+
+.report-table .subtotal-row td {
+    background: #e6f7f9;
+    font-weight: 700;
+}
+
+.report-table .grand-total-row td {
+    background: #d1f0f4;
+    font-weight: 700;
+    border-top: 2px solid #17a2b8;
+}
+
+.report-table .grand-total-row .income-col {
+    color: #16a34a;
+}
+
+.report-table .grand-total-row .expense-col {
+    color: #dc3545;
+}
+
+.savings-line {
+    text-align: right;
+    font-weight: 700;
+    color: #17a2b8;
+    margin-top: 10px;
+}
+
+.report-note {
+    font-size: 0.75rem;
+    color: #9aa0ab;
+    font-style: italic;
+    margin-top: 8px;
+}
+/* =====================================================
+   PAGINATION WRAPPER
+===================================================== */
+
+.pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 30px;
+  padding: 15px 20px;
+  border-top: 1px solid #ddd;
+}
+
+
+/* =====================================================
+   ROWS PER PAGE
+===================================================== */
+
+.rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.rows-per-page label {
+  font-size: 18px;
+  color: #222;
+  white-space: nowrap;
+}
+
+
+#page-size {
+  min-width: 75px;
+  height: 40px;
+  padding: 5px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  cursor: pointer;
+}
+
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.pagination-controls label {
+    font-weight: 500;
+}
+
+.page-size-select {
+    width: 90px;
+}
