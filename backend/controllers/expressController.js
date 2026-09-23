@@ -87,7 +87,6 @@ const getExpenses = async (req, res) => {
         let pageSize =
             parseInt(req.query.pageSize, 10) || DEFAULT_PAGE_SIZE;
 
-        // Only allow the predefined page sizes
         if (!ALLOWED_PAGE_SIZES.includes(pageSize)) {
             pageSize = DEFAULT_PAGE_SIZE;
         }
@@ -245,23 +244,36 @@ const downloadExpenses = async (req, res) => {
 
         const expenses = await fetchUserExpenses(req.user.id);
 
-        // Build readable plain-text content, one expense per line
-        const fileBody = expenses
-            .map((exp) => {
-                const date = new Date(exp.createdAt).toISOString().slice(0, 10);
-                return `${date} | ₹${exp.amount} | ${exp.description} | ${exp.category} | ${exp.note || "No note"}`;
-            })
-            .join("\n");
+        // CSV header row
+        const header = "Date,Amount,Description,Category,Note";
 
-        // Same key every time for this user - S3 overwrites the existing object
-        const fileKey = `expenses/${req.user.id}/expenses.txt`;
+        // One CSV line per expense. Wrapping each value in quotes and
+        // escaping any quote characters inside it (" -> "") keeps commas
+        // or quotes inside a description/note from breaking the columns.
+        const escapeCsv = (value) => `"${String(value).replace(/"/g, '""')}"`;
+
+        const rows = expenses.map((exp) => {
+            const date = new Date(exp.createdAt).toISOString().slice(0, 10);
+            return [
+                escapeCsv(date),
+                escapeCsv(exp.amount),
+                escapeCsv(exp.description),
+                escapeCsv(exp.category),
+                escapeCsv(exp.note || "No note"),
+            ].join(",");
+        });
+
+        const csvContent = [header, ...rows].join("\n");
+
+        const fileKey = `expenses/${req.user.id}/expenses.csv`;
 
         await s3
             .putObject({
                 Bucket: process.env.AWS_S3_BUCKET,
                 Key: fileKey,
-                Body: fileBody,
-                ContentType: "text/plain",
+                Body: csvContent,
+                ContentType: "text/csv",
+                ContentDisposition: "attachment; filename=\"expenses.csv\"",
                 ACL: "public-read"
             })
             .promise();

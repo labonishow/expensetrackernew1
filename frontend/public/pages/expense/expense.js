@@ -62,7 +62,7 @@ axios.interceptors.response.use(
 
     if (isRealAuthFailure) {
       localStorage.removeItem("token");
-     window.location.href = "../signup/signup.html";
+      window.location.href = "../signup/signup.html";
     }
 
     return Promise.reject(error);
@@ -71,19 +71,16 @@ axios.interceptors.response.use(
 
 function setupCategorySuggestions() {
   const descriptionInput = document.getElementById("description");
+  const categoryInput = document.getElementById("category");
 
-  const suggestion = document.getElementById("category-suggestion");
-
-  if (!descriptionInput || !suggestion) {
+  if (!descriptionInput || !categoryInput) {
     return;
   }
 
-  descriptionInput.addEventListener("keydown", async (e) => {
-    if (e.key !== "Enter") {
-      return;
-    }
+  let debounceTimer = null;
 
-    e.preventDefault();
+  descriptionInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
 
     const description = descriptionInput.value.trim();
 
@@ -91,13 +88,17 @@ function setupCategorySuggestions() {
       return;
     }
 
-    const category = await fetchCategorySuggestion(description);
+    // Wait 500ms after the user stops typing before calling the AI,
+    // instead of requiring them to press Enter.
+    debounceTimer = setTimeout(async () => {
+      const category = await fetchCategorySuggestion(description);
 
-    if (category) {
-      suggestion.textContent = `Suggested category: ${category}`;
-
-      suggestion.hidden = false;
-    }
+      // Only auto-fill if the user hasn't already typed their own category,
+      // so we never overwrite something they entered themselves.
+      if (category && !categoryInput.value.trim()) {
+        categoryInput.value = category;
+      }
+    }, 500);
   });
 }
 
@@ -144,8 +145,6 @@ async function handleExpenseForm(event) {
     });
 
     event.target.reset();
-
-    document.getElementById("category-suggestion").hidden = true;
 
     alert("Expense added successfully!");
 
@@ -307,14 +306,11 @@ function updatePageSizeSelect() {
   pageSizeSelect.value = String(pageSize);
 }
 
-
-
-
 document.addEventListener("DOMContentLoaded", () => {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    window.location.href = "signup.html";
+    window.location.href = "../signup/signup.html";
 
     return;
   }
@@ -347,8 +343,12 @@ function download() {
         resultBox.innerHTML = `Your file is ready: <a href="${fileUrl}" target="_blank" rel="noopener">${fileUrl}</a>`;
         resultBox.hidden = false;
       }
-
-      window.open(fileUrl, "_blank");
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = "expenses.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     })
     .catch((err) => {
       if (err.response?.status === 401) {
