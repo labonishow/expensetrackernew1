@@ -11,7 +11,7 @@ async function callGemini(prompt) {
         model: "gemini-3.8-flash",
         contents: prompt,
         config: {
-            thinkingConfig: { thinkingBudget: 0 }
+            thinkingConfig: { thinkingLevel: "low" }
         }
     });
 }
@@ -46,7 +46,7 @@ const getCategorySuggestion = async (req, res) => {
         });
 
     } catch (err) {
-        console.log("AI suggestion error:", err.message || err);
+        console.log("AI suggestion error:", err.status, err.message || err);
         if (err.status === 503) {
             return res.status(200).json({
                 success: true,
