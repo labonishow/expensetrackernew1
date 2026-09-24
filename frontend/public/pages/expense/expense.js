@@ -110,9 +110,11 @@ async function fetchCategorySuggestion(description) {
       },
     });
 
+    console.log("AI response:", response.data);
+
     return response.data.category;
   } catch (error) {
-    console.log(error.message);
+    console.log("AI error:", error.message);
 
     return null;
   }

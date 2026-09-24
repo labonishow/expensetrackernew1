@@ -11,7 +11,7 @@ async function callGemini(prompt) {
         model: "gemini-3.8-flash",
         contents: prompt,
         config: {
-            thinkingConfig: { thinkingLevel: "low" }
+            thinkingConfig: { thinkingBudget: 0 }
         }
     });
 }
@@ -46,14 +46,14 @@ const getCategorySuggestion = async (req, res) => {
         });
 
     } catch (err) {
-        console.log("AI suggestion error:", err.status, err.message || err);
-        if (err.status === 503) {
-            return res.status(200).json({
-                success: true,
-                category: "Other",
-                message: "AI is busy right now, defaulted to 'Other'"
-            });
-        }
+        console.log("AI suggestion error:", err.message || err);
+       if (err.status === 503) {
+    return res.status(200).json({
+        success: false,
+        category: "Other",
+        message: "AI is temporarily unavailable. Defaulted to Other."
+    });
+}
 
         res.status(500).json({ success: false, message: "Something went wrong" });
     }
