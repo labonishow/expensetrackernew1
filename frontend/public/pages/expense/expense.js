@@ -87,14 +87,9 @@ function setupCategorySuggestions() {
     if (!description) {
       return;
     }
-
-    // Wait 500ms after the user stops typing before calling the AI,
-    // instead of requiring them to press Enter.
     debounceTimer = setTimeout(async () => {
       const category = await fetchCategorySuggestion(description);
 
-      // Only auto-fill if the user hasn't already typed their own category,
-      // so we never overwrite something they entered themselves.
       if (category && !categoryInput.value.trim()) {
         categoryInput.value = category;
       }

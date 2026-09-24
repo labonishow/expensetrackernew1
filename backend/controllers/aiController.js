@@ -1,5 +1,6 @@
 const { GoogleGenAI } = require("@google/genai");
 
+// The SDK automatically looks for the process.env.GEMINI_API_KEY
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 function buildPrompt(description) {
@@ -8,9 +9,10 @@ function buildPrompt(description) {
 
 async function callGemini(prompt) {
     return ai.models.generateContent({
-        model: "gemini-3.8-flash",
+        model: "gemini-2.5-flash", // Use the stable recommended model version
         contents: prompt,
         config: {
+            // Correct format for passing thinking budget configs in standard generation
             thinkingConfig: { thinkingBudget: 0 }
         }
     });
@@ -30,7 +32,8 @@ const getCategorySuggestion = async (req, res) => {
         try {
             response = await callGemini(prompt);
         } catch (err) {
-            if (err.status === 503) {
+            // Handle transient 503 Service Unavailable API errors with a quick retry
+            if (err.status === 503 || err.statusCode === 503) {
                 await new Promise((resolve) => setTimeout(resolve, 800));
                 response = await callGemini(prompt);
             } else {
@@ -38,24 +41,24 @@ const getCategorySuggestion = async (req, res) => {
             }
         }
 
-        const category = (response.text || "").trim() || "Other";
+        // Safely extract text from the standard response wrapper
+        const category = response && response.text ? response.text.trim() : "Other";
 
-        res.status(200).json({
+        // Keep it clean. Send a simple string back that matches what frontend maps.
+        return res.status(200).json({
             success: true,
-            category
+            category: category || "Other"
         });
 
     } catch (err) {
-        console.log("AI suggestion error:", err.message || err);
-       if (err.status === 503) {
-    return res.status(200).json({
-        success: false,
-        category: "Other",
-        message: "AI is temporarily unavailable. Defaulted to Other."
-    });
-}
-
-        res.status(500).json({ success: false, message: "Something went wrong" });
+        console.error("AI suggestion error:", err.message || err);
+        
+        // Graceful fallback so the frontend frontend doesn't break or log out
+        return res.status(200).json({
+            success: false,
+            category: "Other",
+            message: "AI is temporarily unavailable. Defaulted to Other."
+        });
     }
 };
 
