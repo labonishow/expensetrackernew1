@@ -9,7 +9,7 @@ function buildPrompt(description) {
 
 async function callGemini(prompt) {
     return ai.models.generateContent({
-        model: "gemini-2.5-flash", // Use the stable recommended model version
+        model: "gemini-3.8-flash",
         contents: prompt,
         config: {
             // Correct format for passing thinking budget configs in standard generation
